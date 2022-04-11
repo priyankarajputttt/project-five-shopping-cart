@@ -1,5 +1,6 @@
 const express = require("express")
 const mongoose = require("mongoose")
+const multer = require("multer")
 
 const route = require("./route/route")
 
@@ -7,6 +8,7 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+app.use(multer().any())
 
 mongoose.connect("mongodb+srv://rohan7599:MipvNOjb97usB2oZ@cluster0.lviwx.mongodb.net/group30Database?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true})
     .then(() => console.log('mongodb running on 27017'))

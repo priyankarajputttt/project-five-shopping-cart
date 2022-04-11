@@ -18,9 +18,11 @@
   },
   "homepage": "https://github.com/Rohan7050/project_five#readme",
   "dependencies": {
+    "aws-sdk": "^2.1111.0",
+    "bcrypt": "^5.0.1",
     "express": "^4.17.3",
     "moment": "^2.29.2",
     "mongoose": "^6.2.10",
-    "validator": "^13.7.0"
+    "multer": "^1.4.4"
   }
 }
