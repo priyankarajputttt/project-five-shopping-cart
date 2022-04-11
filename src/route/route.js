@@ -12,5 +12,8 @@ router.get("/test", (req, res) => {
 
 router.post("/register", userController.register)
 
+router.get("/user/:userId/profile", userController.getUserProfile)
+
+router.post("/login", userController.userlogin)
 
 module.exports = router

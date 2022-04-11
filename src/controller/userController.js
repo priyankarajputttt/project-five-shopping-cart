@@ -1,6 +1,7 @@
 const userModel = require("../model/userModel")
 const validator = require("../validator/validator")
 const aws = require("./aws")
+const jwt = require("jsonwebtoken")
 
 const register = async (req, res) => {
     try{
@@ -79,6 +80,72 @@ const register = async (req, res) => {
     }
 }
 
+const getUserProfile = async function(req,res){
+    try{  
+        let userId = req.params.userId;
+        if(!(validator.isValid(userId) && validator.isValidObjectId(userId))) {
+          return res.status(400).send({status: false, msg: "user  Id not valid"})
+      }
+      let getUserProfile = await userModel.findById(userId);
+      if(!getUserProfile){
+          return res.status(404).send({status:false, msg:"User Not Found"})
+      }
+     return res.status(200).send({status:true, message: "User profile details",data:getUserProfile})
+  }catch (err) {
+      console.log("This is the error :", err.message);
+      return res.status(500).send({ msg: "Error", error: err.message });
+    }
+}
+
+const userlogin = async function (req, res){
+    try{      
+      const body = req.body;
+      //// check body  provied or not
+      if(!validator.isValidObject(body)){
+          return res.status(404).send ({status:false, msg :"Please provide body"})
+      }
+      const emailId = req.body.email
+      const password = req.body.password
+      //check user exist or not
+      if(!(emailId || password)) {
+        return res.status(400).send ({ status : false, msg: "uer does not exist"})
+      } 
+     // check email provied or not
+      if(!validator.isValid(emailId)){
+            return res.status(400).send ({status:false , msg: "plese provide email_Id"})    
+      }
+      // check by regex
+      if(!(validator.isValidEmail(emailId))) {
+          return res.status(400).send ({status:false, msg: "please provide valid eamil with sign"})
+      }
+      // check password provied or not
+      if(!validator.isValid(password)){
+          return res.status(400).send ({status:false, msg: "please provide valid password"})
+      }
+     //check by regex
+      // if (!(validator.isValidPassword(password))) {
+      //     return res.status(400).send ({status:false, msg: "please provide valid password with valid sign"})
+      // }
+      const login = await userModel.findOne({ email: emailId, password: password})
+      if(!login) {
+          return res.status(400).send ({ status: false , msg : "username or the password is not corerct"})
+      }
+      let token = jwt.sign(
+          {
+              userId: login._id,
+              iat: Math.floor(Date.now() / 1000),
+              exp: Math.floor(Date.now() / 1000) + 2*60*60
+         
+          }, "projectfourgroup30"
+      );
+         res.status(200).setHeader ("api-token-key", token)
+          return res.status(200).send ({ status:true, msg: "created successfully" ,data:{userId: login._id, Token: token}})
+    } 
+      catch (error) {
+        return res.status(500).send({ ERROR: error.message })
+    }
+};
+  
 const getProfileImgLink = async (req, res) => {
     try{
         let files = req.files
@@ -95,3 +162,5 @@ const getProfileImgLink = async (req, res) => {
 }
 
 module.exports.register = register
+module.exports.getUserProfile = getUserProfile;
+module.exports.userlogin = userlogin

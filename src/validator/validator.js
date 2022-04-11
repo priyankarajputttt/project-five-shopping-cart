@@ -1,3 +1,5 @@
+const mongoose = require("mongoose")
+
 const isValidObject = (data) => {
     if (Object.keys(data).length === 0){
         return false
@@ -24,10 +26,15 @@ const isValidPW = (value) => {
     return /^[a-zA-Z0-9'@&#.\s]{8,15}$/.test(value.trim())
 }
 
+const isValidObjectId = (value) => {
+    return mongoose.Types.ObjectId.isValid(value)
+
+}
+
 module.exports.isValidObject = isValidObject
 module.exports.isValid = isValid
 module.exports.isValidPhone = isValidPhone
 module.exports.isValidEmail = isValidEmail
 module.exports.isValidPW = isValidPW
+module.exports.isValidObjectId = isValidObjectId
 
-// console.log(isValidPhone(0578475355))
