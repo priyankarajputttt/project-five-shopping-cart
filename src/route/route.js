@@ -1,6 +1,7 @@
 const express = require("express")
 
 const userController = require("../controller/userController")
+const mw = require("../middleware/auth")
 
 const router = express.Router()
 
@@ -12,8 +13,8 @@ router.get("/test", (req, res) => {
 
 router.post("/register", userController.register)
 
-router.get("/user/:userId/profile", userController.getUserProfile)
-
 router.post("/login", userController.userlogin)
+
+router.get("/user/:userId/profile",mw.authentication, userController.getUserProfile)
 
 module.exports = router

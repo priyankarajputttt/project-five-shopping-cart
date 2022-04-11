@@ -5,9 +5,11 @@ const jwt = require("jsonwebtoken")
 
 const register = async (req, res) => {
     try{
-        const data1 = req.body.data;
-        // console.log(JSON.parse(data))
-        const data = JSON.parse(data1)
+        // const data1 = req.body.data;
+        
+        // const data = JSON.parse(data1)
+        const data = req.body
+        // console.log(data)
         // const file = req.files
         if (!validator.isValidObject(data)){
             return res.status(400).send({status: false, message: "please fill all required fields"})
