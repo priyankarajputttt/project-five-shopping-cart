@@ -1,0 +1,25 @@
+{
+  "name": "project_five",
+  "version": "1.0.0",
+  "description": "Project - Products Management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rohan7050/project_five.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rohan7050/project_five/issues"
+  },
+  "homepage": "https://github.com/Rohan7050/project_five#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "moment": "^2.29.2",
+    "mongoose": "^6.2.10"
+  }
+}
