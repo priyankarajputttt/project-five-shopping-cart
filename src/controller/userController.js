@@ -15,8 +15,12 @@ const register = async (req, res) => {
         if (!validator.isValidObject(data)){
             return res.status(400).send({status: false, message: "please fill all required fields"})
         }
-        const{fname, lname, email, phone, password, address} = data
-        const {shipping, billing} = address
+        const{fname, lname, email, phone, password} = data
+        // let address = data.address
+        data.address = JSON.parse(data.address)
+
+        // return res.send(address)
+        const {shipping, billing} = data.address
         if (!validator.isValidObject(shipping)){
             return res.status(400).send({status: false, message: "please fill all required fields in shipping"})
         }
@@ -67,6 +71,9 @@ const register = async (req, res) => {
         if(!validator.isValid(shipping.pincode)){
             return res.status(400).send({status: false, message: "please enter pincode"})
         }
+        if(!/^[0-9]*$/.test(shipping.pincode)){
+            return res.status(400).send({status: false, message: "please enter only numbers in pincode"})
+        }
         if(!validator.isValid(billing.street)){
             return res.status(400).send({status: false, message: "please enter street name"})
         }
@@ -75,6 +82,9 @@ const register = async (req, res) => {
         }
         if(!validator.isValid(billing.pincode)){
             return res.status(400).send({status: false, message: "please enter pincode"})
+        }
+        if(!/^[0-9]*$/.test(billing.pincode)){
+            return res.status(400).send({status: false, message: "please enter only numbers in pincode"})
         }
         bcrypt.hash(password, salt, (err, result) => {
             if(result){
@@ -176,7 +186,7 @@ const getProfileImgLink = async (req, res) => {
             // return res.status(201).send({status: true, message: "file uploaded succesfully", data: uploadedFileURL})
             return uploadedFileURL
         }else{
-            return res.status(400).send({ msg: "No file found" })
+            return res.status(400).send({status: false, message: "please enter profile pic" })
         }
     }catch(error){
         return res.status(500).send({status: false, message: error.message })
@@ -227,25 +237,45 @@ const updateUser = async (req, res) => {
         const add = JSON.parse(JSON.stringify(isUserExist.address))
         // return res.send(add)
         if(data.address){
+            data.address = JSON.parse(data.address)
+            // return res.send(data)
             if(data.address.shipping){
                 if(data.address.shipping.street){
+                    if (!validator.isValid(data.address.shipping.street)){
+                        return res.status(400).send({status: false, message: "please enter shipping street name"})
+                    }
                     add.shipping.street = data.address.shipping.street
                 }
                 if(data.address.shipping.city){
+                    if (!validator.isValid(data.address.shipping.city)){
+                        return res.status(400).send({status: false, message: "please enter shipping city name"})
+                    }
                     add.shipping.city = data.address.shipping.city
                 }
                 if(data.address.shipping.pincode){
+                    if (!validator.isValid(data.address.shipping.pincode)){
+                        return res.status(400).send({status: false, message: "please enter shipping pincode"})
+                    }
                     add.shipping.pincode = data.address.shipping.pincode
                 }
             }
             if(data.address.billing){
                 if(data.address.billing.street){
+                    if (!validator.isValid(data.address.billing.street)){
+                        return res.status(400).send({status: false, message: "please enter billing street name"})
+                    }
                     add.billing.street = data.address.billing.street
                 }
                 if(data.address.billing.city){
+                    if (!validator.isValid(data.address.billing.city)){
+                        return res.status(400).send({status: false, message: "please enter billing city name"})
+                    }
                     add.billing.city = data.address.billing.city
                 }
                 if(data.address.billing.pincode){
+                    if (!validator.isValid(data.address.billing.pincode)){
+                        return res.status(400).send({status: false, message: "please enter billing pincode"})
+                    }
                     add.billing.pincode = data.address.billing.pincode
                 }
             }
