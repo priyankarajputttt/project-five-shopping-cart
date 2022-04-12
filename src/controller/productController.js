@@ -111,7 +111,7 @@ const getSpecificProduct = async function (req, res) {
             data["price"] = {$lte:priceLessThan,$gte:priceGreaterThan}
     
         }
-        let filerProduct = await productModel.find(data).sort({price: req.query.priceSort});
+        let filerProduct = await productModel.find(data).sort({price: req.query.priceSort})//.skip(8)//.limit(1)//.count();
         // let filerProduct = await productModel.find({title: {$regex: name}});
         if (filerProduct.length === 0) {
             return res.status(400).send({
@@ -152,27 +152,17 @@ const getProductByProductId = async (req,res) => {
 
 
 const deleteProduct = async (req, res) => {
-
     try{
             const productId = req.params.productId
-
         if(!validator.isValidObjectId(productId))
         {return res.status(400).send({status:true, message:"Invalid productId"})}
-
          const deletedProductId = await productModel.findById({_id:productId})
-
          if(!deletedProductId)
          {return res.status(404).send({status:true, message:`This ${productId} productId does not exist `})}
-
           if(deletedProductId.isDeleted !== false)
          {return res.status(400).send({status:true, message:`This ${productId} productId is already Deleted `})}
-
          await productModel.findByIdAndUpdate({_id:productId}, {$set:{isDeleted:true}}, {new : true})
-
         return res.status(200).send({status:true, message:"Deleted Successfully"})
-
-
-
     } catch(err){
         return res.status(500).send({Error:err.message})
     }

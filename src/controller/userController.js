@@ -227,23 +227,27 @@ const updateUser = async (req, res) => {
         const add = JSON.parse(JSON.stringify(isUserExist.address))
         // return res.send(add)
         if(data.address){
-            if(data.address.shipping.street){
-                add.shipping.street = data.address.shipping.street
+            if(data.address.shipping){
+                if(data.address.shipping.street){
+                    add.shipping.street = data.address.shipping.street
+                }
+                if(data.address.shipping.city){
+                    add.shipping.city = data.address.shipping.city
+                }
+                if(data.address.shipping.pincode){
+                    add.shipping.pincode = data.address.shipping.pincode
+                }
             }
-            if(data.address.shipping.city){
-                add.shipping.city = data.address.shipping.city
-            }
-            if(data.address.shipping.pincode){
-                add.shipping.pincode = data.address.shipping.pincode
-            }
-            if(data.address.billing.street){
-                add.billing.street = data.address.billing.street
-            }
-            if(data.address.billing.city){
-                add.billing.city = data.address.billing.city
-            }
-            if(data.address.billing.pincode){
-                add.billing.pincode = data.address.billing.pincode
+            if(data.address.billing){
+                if(data.address.billing.street){
+                    add.billing.street = data.address.billing.street
+                }
+                if(data.address.billing.city){
+                    add.billing.city = data.address.billing.city
+                }
+                if(data.address.billing.pincode){
+                    add.billing.pincode = data.address.billing.pincode
+                }
             }
             data.address = add
         }
