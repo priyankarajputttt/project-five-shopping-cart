@@ -2,6 +2,9 @@ const userModel = require("../model/userModel")
 const validator = require("../validator/validator")
 const aws = require("./aws")
 const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
+
+const salt = 10
 
 const register = async (req, res) => {
     try{
@@ -9,15 +12,10 @@ const register = async (req, res) => {
         
         // const data = JSON.parse(data1)
         const data = req.body
-        // console.log(data)
-        // const file = req.files
         if (!validator.isValidObject(data)){
             return res.status(400).send({status: false, message: "please fill all required fields"})
         }
         const{fname, lname, email, phone, password, address} = data
-        // address = JSON.parse(address)
-        // console.log(password)
-        // console.log(address)
         const {shipping, billing} = address
         if (!validator.isValidObject(shipping)){
             return res.status(400).send({status: false, message: "please fill all required fields in shipping"})
@@ -72,6 +70,11 @@ const register = async (req, res) => {
         if(!validator.isValid(billing.pincode)){
             return res.status(400).send({status: false, message: "please enter pincode"})
         }
+        bcrypt.hash(password, salt, (err, result) => {
+            if(result){
+                data.password = result
+            }
+        })
         const link = await getProfileImgLink(req, res)
         data.profileImage = link
         // return res.send({data: data})
@@ -125,23 +128,30 @@ const userlogin = async function (req, res){
           return res.status(400).send ({status:false, msg: "please provide valid password"})
       }
      //check by regex
-      // if (!(validator.isValidPassword(password))) {
-      //     return res.status(400).send ({status:false, msg: "please provide valid password with valid sign"})
-      // }
-      const login = await userModel.findOne({ email: emailId, password: password})
-      if(!login) {
-          return res.status(400).send ({ status: false , msg : "username or the password is not corerct"})
+      if(!validator.isValidPW(password)){
+          return res.status(400).send({status: false, message: "please enter valid password, between 8 to 15 characters"})
       }
-      let token = jwt.sign(
-          {
-              userId: login._id,
-              iat: Math.floor(Date.now() / 1000),
-              exp: Math.floor(Date.now() / 1000) + 2*60*60
-         
-          }, "projectfourgroup30"
-      );
-         res.status(200).setHeader ("api-token-key", token)
-          return res.status(200).send ({ status:true, msg: "created successfully" ,data:{userId: login._id, Token: token}})
+      const login = await userModel.findOne({ email: emailId})
+      if(!login) {
+          return res.status(400).send ({ status: false , msg : "email is not register"})
+      }
+      bcrypt.compare(password, login.password, (err, result) => {
+          if(result === true){
+            let token = jwt.sign(
+                {
+                    userId: login._id,
+                    iat: Math.floor(Date.now() / 1000),
+                    exp: Math.floor(Date.now() / 1000) + 2*60*60
+               
+                }, "projectfivegroup30"
+            );
+                res.status(200).setHeader ("api-token-key", token)
+                return res.status(200).send ({ status:true, msg: "created successfully" ,data:{userId: login._id, Token: token}})
+            }else{
+                return res.status(400).send({status: false, message: "incorrect password"})
+            }
+        })
+      
     } 
       catch (error) {
         return res.status(500).send({ ERROR: error.message })

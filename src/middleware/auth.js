@@ -8,7 +8,7 @@ const authentication = async function  (req, res , next)
     if(!token){
        return  res.status(400).send ({status:false, msg: "important header is missing"})
     }
-    let decodedToken =jwt.verify(token , "projectfourgroup30")
+    let decodedToken =jwt.verify(token , "projectfivegroup30")
     //check decoded Token
     if(!decodedToken){
         return  res.status(400).send ({status:false, message: "token is invalid"})
@@ -25,7 +25,7 @@ const userAuthorization = async function(req, res, next){
     if(!token){
         return res.status(400).send("Plz enter a token")
     }
-    let decodedToken = jwt.verify(token, "projectfourgroup30")
+    let decodedToken = jwt.verify(token, "projectfivegroup30")
     let userId = req.params.userId;
     let DuserId = decodedToken.userId;
     if(!(validator.isValid(userId)) && (validator.isValidobjectId(userId))){
