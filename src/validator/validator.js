@@ -31,10 +31,20 @@ const isValidObjectId = (value) => {
 
 }
 
+const isValidSize = function (title) {
+    return ["S", "XS","M","X", "L","XXL", "XL"].indexOf(title) !== -1
+}
+
+const isValidString = (value) => {
+    return /^[a-zA-Z]+$/.test(value)
+}
+
 module.exports.isValidObject = isValidObject
 module.exports.isValid = isValid
 module.exports.isValidPhone = isValidPhone
 module.exports.isValidEmail = isValidEmail
 module.exports.isValidPW = isValidPW
 module.exports.isValidObjectId = isValidObjectId
+module.exports.isValidSize = isValidSize
+module.exports.isValidString = isValidString
 

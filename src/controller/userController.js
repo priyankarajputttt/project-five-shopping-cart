@@ -26,8 +26,14 @@ const register = async (req, res) => {
         if(!validator.isValid(fname)){
             return res.status(400).send({status: false, message: "please enter your first name"})
         }
+        if(!validator.isValidString(fname)){
+            return res.status(400).send({status: false, message: "please enter valid first name"}) 
+        }
         if(!validator.isValid(lname)){
             return res.status(400).send({status: false, message: "please enter your last name"})
+        }
+        if(!validator.isValidString(lname)){
+            return res.status(400).send({status: false, message: "please enter valid last name"}) 
         }
         if(!validator.isValid(email)){
             return res.status(400).send({status: false, message: "please enter your email"})
