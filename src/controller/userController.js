@@ -178,119 +178,18 @@ const getProfileImgLink = async (req, res) => {
 }
 
 
-const updateUser = async function(req,res){
-    try{ 
-        const userId = req.params.userId
-        
-        const data = req.body
-
-     
-        if (!validator.isValidObjectId(userId)){
-            return res.status(400).send({status: false, message: "Invalid UserId"})
-        }
-       
-        const checkUserIdExist = await userModel.findOne({ _id: userId})
-        if (!checkUserIdExist) {
-            return res.status(404).send({ status: false, msg: "userId does not exist" })
-        }
-
-        if (!validator.isValidObject(data)){
-            return res.status(400).send({status: false, message: "please fill the field"})
-        } 
-
-        const  {fname, lname, email, profileImage, phone, password, address} = data
-
-        const{billing, shipping } = data
-
-        let updatedData = {}
-
-        if(fname){
-            if(!validator.isValid(fname)){
-                return res.status(400).send({status: false, message: "please enter first name"})
-            }
-        
-            updatedData['fname'] = fname
-
-        }
-        if(lname){
-            if(!validator.isValid(lname)){
-                return res.status(400).send({status: false, message: "please enter last name"})
-            }
-            updatedData['lname'] = lname
-
-        }
-        if(email){
-            if(!validator.isValid(email)){
-                return res.status(400).send({status: false, message: "please enter email"})
-            }
-            updatedData['email'] = email
-
-        }
-        if(profileImage){
-            if(!validator.isValid(profileImage)){
-                return res.status(400).send({status: false, message: "please enter profileImage"})
-            }
-            updatedData['profileImage'] = profileImage
-
-        }
-        if(phone){
-            if(!validator.isValid(phone)){
-                return res.status(400).send({status: false, message: "please enter phone"})
-            }
-            updatedData['phone'] = phone
-
-        }
-        if(password){
-            if(!validator.isValid(email)){
-                return res.status(400).send({status: false, message: "please enter email"})
-            }
-            updatedData['password'] = password
-
-        }
-        if(address){
-            if(!validator.isValid(address)){
-                return res.status(400).send({status: false, message: "please enter address"})
-            }
-            updatedData['address'] = address
-
-        }
-        if(billing){
-            if(!validator.isValid(billing)){
-                return res.status(400).send({status: false, message: "please enter billing"})
-            }
-            updatedData['billing'] = billing  
-
-        }
-        if(shipping){
-            if(!validator.isValid(shipping)){
-                return res.status(400).send({status: false, message: "please enter shipping"})
-            }
-            updatedData['shipping'] = shipping
-        }
-
-    let updatedUserDetails = await userModel.findOneAndUpdate({ _id: userId }, { $set: updatedData }, { new: true })
-    return res.status(200).send({ status: true, message: "Data updated succesfully", data: updatedUserDetails })
-        
-
-
-
-    } catch (error){
-        return res.status(500).send({ERROR:error.message})
-    }
-
-}
-
-const updateUser1 = async (req, res) => {
+const updateUser = async (req, res) => {
     try{
         const {userId} = req.params
         if (!validator.isValidObjectId(userId)){
-            return res.status(400).send ({status:false, message :"Please provide body"})
+            return res.status(400).send ({status:false, message :"Please provide valid ID"})
         }
-        const data = req.body//JSON.parse(JSON.stringify(req.body))
+        const data = req.body //JSON.parse(JSON.stringify(req.body)) 
+        const files = req.files
         const {password} = data
-        if(!validator.isValidObject(data)){
-            return res.status(400).send ({status:false, message :"Please provide body"})
-        }
+        // if(!validator.isValidObject(data)){
+        //     return res.status(400).send ({status:false, message :"Please provide body"})
+        // }
         const isUserExist = await userModel.findById(userId)
         if (!isUserExist){
             return res.status(404).send({status: false, message: "user not found"})
@@ -298,13 +197,26 @@ const updateUser1 = async (req, res) => {
         if(data._id){
             return res.status(400).send({status: false, message: "can not update user id"})
         }
+        if(data.email){
+            const isEmailInUse = await userModel.findOne({email: data.email})
+            if(isEmailInUse) {
+                return res.status(400).send({status:false, message: "email already registered, enter different email"})
+            }
+        }
+        if(data.phone){
+            const isPhoneInUse = await userModel.findOne({phone: data.phone})
+            if(isPhoneInUse) {
+                return res.status(400).send({status:false, message: "phone number already registered, enter different number"})
+            }
+        }
+        if(files.length > 0){
+            const link = await getProfileImgLink(req, res)
+            data.profileImage = link
+            // console.log(link)
+        }
         if (password){
-            bcrypt.hash(password, salt, (err, result) => {
-                if(result){
-                    data.password = result
-                    console.log(data.password)
-                }
-            })
+            const hash = await bcrypt.hash(password, salt)
+            data.password = hash
         }
         const add = JSON.parse(JSON.stringify(isUserExist.address))
         // return res.send(add)
@@ -342,4 +254,3 @@ module.exports.register = register
 module.exports.getUserProfile = getUserProfile;
 module.exports.userlogin = userlogin
 module.exports.updateUser = updateUser
-module.exports.updateUser1 = updateUser1
