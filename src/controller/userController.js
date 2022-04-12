@@ -85,22 +85,6 @@ const register = async (req, res) => {
     }
 }
 
-const getUserProfile = async function(req,res){
-    try{  
-        let userId = req.params.userId;
-        if(!(validator.isValid(userId) && validator.isValidObjectId(userId))) {
-          return res.status(400).send({status: false, msg: "user  Id not valid"})
-      }
-      let getUserProfile = await userModel.findById(userId);
-      if(!getUserProfile){
-          return res.status(404).send({status:false, msg:"User Not Found"})
-      }
-     return res.status(200).send({status:true, message: "User profile details",data:getUserProfile})
-  }catch (err) {
-      console.log("This is the error :", err.message);
-      return res.status(500).send({ msg: "Error", error: err.message });
-    }
-}
 
 const userlogin = async function (req, res){
     try{      
@@ -157,6 +141,26 @@ const userlogin = async function (req, res){
         return res.status(500).send({ ERROR: error.message })
     }
 };
+
+
+const getUserProfile = async function(req,res){
+    try{  
+        let userId = req.params.userId;
+        if(!(validator.isValid(userId) && validator.isValidObjectId(userId))) {
+          return res.status(400).send({status: false, msg: "user  Id not valid"})
+      }
+      let getUserProfile = await userModel.findById(userId);
+      if(!getUserProfile){
+          return res.status(404).send({status:false, msg:"User Not Found"})
+      }
+     return res.status(200).send({status:true, message: "User profile details",data:getUserProfile})
+  }catch (err) {
+      console.log("This is the error :", err.message);
+      return res.status(500).send({ msg: "Error", error: err.message });
+    }
+}
+
+
   
 const getProfileImgLink = async (req, res) => {
     try{
@@ -173,6 +177,111 @@ const getProfileImgLink = async (req, res) => {
     }
 }
 
+
+const updateUser = async function(req,res){
+    try{ 
+        const userId = req.params.userId
+        
+        const data = req.body
+
+     
+        if (!validator.isValidObjectId(userId)){
+            return res.status(400).send({status: false, message: "Invalid UserId"})
+        }
+       
+        const checkUserIdExist = await userModel.findOne({ _id: userId})
+        if (!checkUserIdExist) {
+            return res.status(404).send({ status: false, msg: "userId does not exist" })
+        }
+
+        if (!validator.isValidObject(data)){
+            return res.status(400).send({status: false, message: "please fill the field"})
+        } 
+
+        const  {fname, lname, email, profileImage, phone, password, address} = data
+
+        const{billing, shipping } = data
+
+        let updatedData = {}
+
+        if(fname){
+            if(!validator.isValid(fname)){
+                return res.status(400).send({status: false, message: "please enter first name"})
+            }
+        
+            updatedData['fname'] = fname
+
+        }
+        if(lname){
+            if(!validator.isValid(lname)){
+                return res.status(400).send({status: false, message: "please enter last name"})
+            }
+            updatedData['lname'] = lname
+
+        }
+        if(email){
+            if(!validator.isValid(email)){
+                return res.status(400).send({status: false, message: "please enter email"})
+            }
+            updatedData['email'] = email
+
+        }
+        if(profileImage){
+            if(!validator.isValid(profileImage)){
+                return res.status(400).send({status: false, message: "please enter profileImage"})
+            }
+            updatedData['profileImage'] = profileImage
+
+        }
+        if(phone){
+            if(!validator.isValid(phone)){
+                return res.status(400).send({status: false, message: "please enter phone"})
+            }
+            updatedData['phone'] = phone
+
+        }
+        if(password){
+            if(!validator.isValid(email)){
+                return res.status(400).send({status: false, message: "please enter email"})
+            }
+            updatedData['password'] = password
+
+        }
+        if(address){
+            if(!validator.isValid(address)){
+                return res.status(400).send({status: false, message: "please enter address"})
+            }
+            updatedData['address'] = address
+
+        }
+        if(billing){
+            if(!validator.isValid(billing)){
+                return res.status(400).send({status: false, message: "please enter billing"})
+            }
+            updatedData['billing'] = billing  
+
+        }
+        if(shipping){
+            if(!validator.isValid(shipping)){
+                return res.status(400).send({status: false, message: "please enter shipping"})
+            }
+            updatedData['shipping'] = shipping
+        }
+
+    let updatedUserDetails = await userModel.findOneAndUpdate({ _id: userId }, { $set: updatedData }, { new: true })
+    return res.status(200).send({ status: true, message: "Data updated succesfully", data: updatedUserDetails })
+        
+
+
+
+    } catch (error){
+        return res.status(500).send({ERROR:error.message})
+    }
+
+}
+
+
 module.exports.register = register
 module.exports.getUserProfile = getUserProfile;
 module.exports.userlogin = userlogin
+module.exports.updateUser = updateUser
