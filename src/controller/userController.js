@@ -280,8 +280,42 @@ const updateUser = async function(req,res){
 
 }
 
+const updateUser1 = async (req, res) => {
+    try{
+        const {userId} = req.params
+        if (!validator.isValidObjectId(userId)){
+            return res.status(400).send ({status:false, message :"Please provide body"})
+        }
+        const data = req.body//JSON.parse(JSON.stringify(req.body))
+        const {password} = data
+        if(!validator.isValidObject(data)){
+            return res.status(400).send ({status:false, message :"Please provide body"})
+        }
+        const isUserExist = await userModel.findById(userId)
+        if (!isUserExist){
+            return res.status(404).send({status: false, message: "user not found"})
+        }
+        if(data._id){
+            return res.status(400).send({status: false, message: "can not update user id"})
+        }
+        if (password){
+            bcrypt.hash(password, salt, (err, result) => {
+                if(result){
+                    data.password = result
+                    console.log(data.password)
+                }
+            })
+        }
+        const updateUser = await userModel.findOneAndUpdate({_id: userId}, data, {new: true})
+        return res.status(200).send({status: true, data: updateUser})
+    }catch(error){
+        return res.status(500).send({status: false, message: error.message})
+    }
+}
+
 
 module.exports.register = register
 module.exports.getUserProfile = getUserProfile;
 module.exports.userlogin = userlogin
 module.exports.updateUser = updateUser
+module.exports.updateUser1 = updateUser1
