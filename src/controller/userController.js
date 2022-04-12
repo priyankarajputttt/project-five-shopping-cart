@@ -306,6 +306,30 @@ const updateUser1 = async (req, res) => {
                 }
             })
         }
+        const add = JSON.parse(JSON.stringify(isUserExist.address))
+        // return res.send(add)
+        if(data.address){
+            if(data.address.shipping.street){
+                add.shipping.street = data.address.shipping.street
+            }
+            if(data.address.shipping.city){
+                add.shipping.city = data.address.shipping.city
+            }
+            if(data.address.shipping.pincode){
+                add.shipping.pincode = data.address.shipping.pincode
+            }
+            if(data.address.billing.street){
+                add.billing.street = data.address.billing.street
+            }
+            if(data.address.billing.city){
+                add.billing.city = data.address.billing.city
+            }
+            if(data.address.billing.pincode){
+                add.billing.pincode = data.address.billing.pincode
+            }
+            data.address = add
+        }
+        // return res.send(data.address)
         const updateUser = await userModel.findOneAndUpdate({_id: userId}, data, {new: true})
         return res.status(200).send({status: true, data: updateUser})
     }catch(error){
