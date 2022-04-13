@@ -8,9 +8,6 @@ const salt = 10
 
 const register = async (req, res) => {
     try{
-        // const data1 = req.body.data;
-        
-        // const data = JSON.parse(data1)
         const data = req.body
         if (!validator.isValidObject(data)){
             return res.status(400).send({status: false, message: "please fill all required fields"})
@@ -18,7 +15,6 @@ const register = async (req, res) => {
         const{fname, lname, email, phone, password} = data
         // let address = data.address
         data.address = JSON.parse(data.address)
-
         // return res.send(address)
         const {shipping, billing} = data.address
         if (!validator.isValidObject(shipping)){
@@ -86,11 +82,13 @@ const register = async (req, res) => {
         if(!/^[0-9]*$/.test(billing.pincode)){
             return res.status(400).send({status: false, message: "please enter only numbers in pincode"})
         }
-        bcrypt.hash(password, salt, (err, result) => {
-            if(result){
-                data.password = result
-            }
-        })
+        // bcrypt.hash(password, salt, (err, result) => {
+        //     if(result){
+        //         data.password = result
+        //     }
+        // })
+        const hash = await bcrypt.hash(password, salt)
+        data.password = hash
         const link = await getProfileImgLink(req, res)
         data.profileImage = link
         // return res.send({data: data})
