@@ -15,7 +15,7 @@ router.post("/register", userController.register)
 
 router.post("/login", userController.userlogin)
 
-router.get("/user/:userId/profile",mw.authentication, userController.getUserProfile)
+router.get("/user/:userId/profile", userController.getUserProfile)
 
 router.put("/user/:userId/profile", userController.updateUser)
 
@@ -26,6 +26,16 @@ router.get("/products", productController.getSpecificProduct)
 
 router.get("/products/:productId", productController.getProductByProductId)
 
+router.put("/products/:productId", productController.updatedProduct)
+
 router.delete("/products/:productId", productController.deleteProduct)
 
+
+
+router.get("*", (req, res) => {
+    return res.status(404).send({status: false, message: "page not found"})
+})
+router.post("*", (req, res) => {
+    return res.status(404).send({status: false, message: "page not found"})
+})
 module.exports = router

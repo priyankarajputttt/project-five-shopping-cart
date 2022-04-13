@@ -1,12 +1,14 @@
 const productModel = require("../model/productModel");
 const validator = require("../validator/validator")
 const aws = require("./aws")
+const moment = require("moment")
 
 const createProduct = async function (req, res) {
 
     try {
         const products = req.body
-
+        products.availableSizes = JSON.parse(products.availableSizes)
+        // return res.send(products)
         if (!validator.isValidObject(products)) {
             return res.status(400).send({ status: false, msg: "Plaese Provide all required field" })
         }
@@ -33,6 +35,7 @@ const createProduct = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Please Provide Available Sizes" })
         }
         for (let i of availableSizes){
+            console.log(i)
             if(!validator.isValidSize(i)){
                 return res.status(400).send({ status: false, msg: 'Please Provide Available Sizes from S,XS,M,X,L,XXL,XL' })
             }
@@ -150,25 +153,105 @@ const getProductByProductId = async (req,res) => {
     }
 }
 
+const updatedProduct = async function (req, res) {
+    try {
+        const { productId } = req.params
+        //check id correct or
+        if (!validator.isValidObjectId(productId)) {
+            return res.status(400).send({ status: false, msg: " NO such Product id are avilable "})
+        }
+        const product = await productModel.findById(productId);
+        //RETURN error is no product found releated to this id
+        if (!product) {
+            return res.status(404).send({ status: false, msg: "NO such Product id are avilable" })
+        }
+        const newProduct = req.body
+        const files = req.files
+        const { title, description, style, price, currencyId, currencyFormat, availableSizes } = newProduct
+        //with the help of AWS we upplode the image  
+        if(files.length > 0){
+            const link = await getNewProductImageLink(req, res)
+            newProduct.NewproductImage = link
+        }
+        //Simply UPDATE THE PRODUCT (ALL THING IN PRODUCT ),PRODUCT IMAGE, 
+        const updateProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, newProduct, { new: true })
+        if (!updateProduct) {
+            return res.status(200).send({ status: false, message: "producr not found Product was all Ready Deleted" })
+        }
+        //console.log(updateProduct)
+        return res.status(200).send({ status: true, msg: "updated product", data: updateProduct })
+    }catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
+    }
 
-const deleteProduct = async (req, res) => {
-    try{
-            const productId = req.params.productId
-        if(!validator.isValidObjectId(productId))
-        {return res.status(400).send({status:true, message:"Invalid productId"})}
-         const deletedProductId = await productModel.findById({_id:productId})
-         if(!deletedProductId)
-         {return res.status(404).send({status:true, message:`This ${productId} productId does not exist `})}
-          if(deletedProductId.isDeleted !== false)
-         {return res.status(400).send({status:true, message:`This ${productId} productId is already Deleted `})}
-         await productModel.findByIdAndUpdate({_id:productId}, {$set:{isDeleted:true}}, {new : true})
-        return res.status(200).send({status:true, message:"Deleted Successfully"})
-    } catch(err){
-        return res.status(500).send({Error:err.message})
+}
+
+const getNewProductImageLink = async function (req, res) {
+    try {
+        let files = req.files
+        if (files && files.length > 0) {
+            let uploadedFileURL = await aws.uploadFile(files[0])
+
+            return uploadedFileURL
+        }
+        else {
+            return res.status(400).send({ status: false, msg: "file Not FOUND" })
+        }
+    }
+    catch (err) {
+        return res.status(500).send({ status: false, error: err.msg })
     }
 }
+
+const deleteProduct = async (req, res) => {
+    try {
+        const productId = req.params.productId
+        if (!validator.isValidObjectId(productId)) {
+            return res.status(400).send({
+                status: true,
+                message: "Invalid productId"
+            })
+        }
+        const deletedProductId = await productModel.findById({
+            _id: productId
+        })
+        if (!deletedProductId) {
+            return res.status(404).send({
+                status: true,
+                message: `This ${productId} productId does not exist `
+            })
+        }
+        if (deletedProductId.isDeleted !== false) {
+            return res.status(400).send({
+                status: true,
+                message: `This ${productId} productId is already Deleted `
+            })
+        }
+        await productModel.findByIdAndUpdate({
+            _id: productId
+        }, {
+            $set: {
+                isDeleted: true,
+                deletedAt: moment().format()
+            }
+        }, {
+            new: true
+        })
+        return res.status(200).send({
+            status: true,
+            message: "Deleted Successfully"
+        })
+    } catch (err) {
+        return res.status(500).send({
+            Error: err.message
+        })
+    }
+}
+
 
 module.exports.createProduct = createProduct
 module.exports.getSpecificProduct = getSpecificProduct
 module.exports.getProductByProductId = getProductByProductId
+module.exports.updatedProduct = updatedProduct
 module.exports.deleteProduct = deleteProduct
+

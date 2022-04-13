@@ -82,11 +82,6 @@ const register = async (req, res) => {
         if(!/^[0-9]*$/.test(billing.pincode)){
             return res.status(400).send({status: false, message: "please enter only numbers in pincode"})
         }
-        // bcrypt.hash(password, salt, (err, result) => {
-        //     if(result){
-        //         data.password = result
-        //     }
-        // })
         const hash = await bcrypt.hash(password, salt)
         data.password = hash
         const link = await getProfileImgLink(req, res)
