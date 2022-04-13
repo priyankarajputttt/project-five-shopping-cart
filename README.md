@@ -96,8 +96,7 @@ Project - Products Management
   - _**On success**_ - Return HTTP status 200 and JWT token in response body. The response should be a JSON object like [this](#successful-response-structure)
   - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 ```yaml
-{
-    "status": true,
+{"status": true,
     "message": "User login successfull",
     "data": {
         "userId": "6165f29cfe83625cf2c10a5c",
@@ -115,7 +114,8 @@ Project - Products Management
 ```yaml
 {
     "status": true,
-    "message": "User profile details",
+    "message": "U
+    ser profile details",
     "data": {
         "address": {
             "shipping": {

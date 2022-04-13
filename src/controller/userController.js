@@ -26,15 +26,17 @@ const register = async (req, res) => {
         if(!validator.isValid(fname)){
             return res.status(400).send({status: false, message: "please enter your first name"})
         }
-        if(!validator.isValidString(fname)){
-            return res.status(400).send({status: false, message: "please enter valid first name"}) 
-        }
+
+        // if(!validator.isValidString(fname)){
+        //     return res.status(400).send({status: false, message: "please enter letters only in first name"})
+        // }
+        
         if(!validator.isValid(lname)){
             return res.status(400).send({status: false, message: "please enter your last name"})
         }
-        if(!validator.isValidString(lname)){
-            return res.status(400).send({status: false, message: "please enter valid last name"}) 
-        }
+        // if(!validator.isValidString(lname)){
+        //     return res.status(400).send({status: false, message: "please enter letters only in last name"}) 
+        // }
         if(!validator.isValid(email)){
             return res.status(400).send({status: false, message: "please enter your email"})
         }
@@ -106,7 +108,7 @@ const userlogin = async function (req, res){
       const password = req.body.password
       //check user exist or not
       if(!(emailId || password)) {
-        return res.status(400).send ({ status : false, msg: "uer does not exist"})
+        return res.status(400).send ({ status : false, msg: "user does not exist"})
       } 
      // check email provied or not
       if(!validator.isValid(emailId)){
@@ -206,18 +208,38 @@ const updateUser = async (req, res) => {
         if(data._id){
             return res.status(400).send({status: false, message: "can not update user id"})
         }
+        if(data.fname){
+            if(!validator.isValidString(data.fname)){
+                return res.status(400).send({status: false, message: "please enter letters only in first name"})
+            }
+        }
+        if(data.lname){
+            if(!validator.isValidString(data.lname)){
+                return res.status(400).send({status: false, message: "please enter letters only in last name"})
+            }
+        }
         if(data.email){
+            if(!validator.isValidEmail(data.email)) {
+                return res.status(400).send({status:false, message: "Please provide valid email Id"})
+             
+            }
             const isEmailInUse = await userModel.findOne({email: data.email})
             if(isEmailInUse) {
                 return res.status(400).send({status:false, message: "email already registered, enter different email"})
             }
         }
         if(data.phone){
+            if(!validator.isValidPhone(data.phone)) {
+                return res.status(400).send({status:false, message: "Please provide 10 digit number && number should start with 6,7,8,9"})
+             
+            }
             const isPhoneInUse = await userModel.findOne({phone: data.phone})
             if(isPhoneInUse) {
                 return res.status(400).send({status:false, message: "phone number already registered, enter different number"})
             }
+
         }
+        //it check image avilable or not
         if(files.length > 0){
             const link = await getProfileImgLink(req, res)
             data.profileImage = link
@@ -249,6 +271,9 @@ const updateUser = async (req, res) => {
                     if (!validator.isValid(data.address.shipping.pincode)){
                         return res.status(400).send({status: false, message: "please enter shipping pincode"})
                     }
+                if(!validator.isValidPincode(data.address.shipping.pincode)) {
+                    return res.status(400).send({status: false, message: "please enter valid shipping pincode only accept 6 didgit number "})
+                }   
                     add.shipping.pincode = data.address.shipping.pincode
                 }
             }
@@ -269,6 +294,10 @@ const updateUser = async (req, res) => {
                     if (!validator.isValid(data.address.billing.pincode)){
                         return res.status(400).send({status: false, message: "please enter billing pincode"})
                     }
+                
+                if(!validator.isValidPincode(data.address.billing.pincode)) {
+                        return res.status(400).send({status: false, message: "please enter valid billing pincode only accept 6 didgit number "})
+                    }    
                     add.billing.pincode = data.address.billing.pincode
                 }
             }
