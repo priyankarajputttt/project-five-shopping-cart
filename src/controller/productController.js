@@ -74,22 +74,25 @@ const getSpecificProduct = async function (req, res) {
         }
         let queryDataSize = req.query.size;
         if (queryDataSize) {
-            if (!(validator.isValid(queryDataSize)) && (validator.isValidSize(queryDataSize))) {
-                return res.status(400).send("plz Enter a valid Size")
+            if (!(validator.isValid(queryDataSize)) ) {
+                return res.status(400).send({status:false, message:"plz enter a valid size"})
             }
-            data["availableSizes"] = queryDataSize;
+            if(!(validator.isValidSize(queryDataSize))) {
+                return res.status(400).send({status:false, message:"Please Provide Available Sizes from S,XS,M,X,L,XXL,XL"})
+            }
+            data["availableSizes"] = queryDataSize.trim();
         }
         let name = req.query.name;
         if (name) {
             if (!validator.isValid(name)) {
-                return res.status(400).send("plz enter a valid name")
+                return res.status(400).send({status:false, message:"plz enter a valid name"})
             }
-            data["title"] = {$regex: name}
+            data["title"] = {$regex: name.trim()}
         }
         let priceGreaterThan = req.query.priceGreaterThan;
         if (priceGreaterThan) {
             if (!validator.isValid(priceGreaterThan)) {
-                return res.status(400).send("plz enter a valid name")
+                return res.status(400).send({status:false, message:"plz enter a valid price"})
             }
             data["price"] = {
                 $gte: priceGreaterThan
@@ -98,7 +101,7 @@ const getSpecificProduct = async function (req, res) {
         let priceLessThan = req.query.priceLessThan;
         if (priceLessThan) {
             if (!validator.isValid(priceLessThan)) {
-                return res.status(400).send("plz enter a valid name")
+                return res.status(400).send({status:false, message:"plz enter a valid price"})
             }
             data["price"] = {
                 $lte: priceLessThan
@@ -106,10 +109,10 @@ const getSpecificProduct = async function (req, res) {
         }
         if( priceLessThan && priceGreaterThan){
             if(!validator.isValid(priceLessThan)){
-                return res.status(400).send("plz enter a valid price")
+                return res.status(400).send({status:false, message:"plz enter a valid price"})
             }
             if(!validator.isValid(priceGreaterThan)){
-                return res.status(400).send("plz enter a valid price")
+                return res.status(400).send({status:false, message:"plz enter a valid price"})
             }
             data["price"] = {$lte:priceLessThan,$gte:priceGreaterThan}
     
