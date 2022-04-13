@@ -26,6 +26,12 @@ const isValidPW = (value) => {
     return /^[a-zA-Z0-9'@&#.\s]{8,15}$/.test(value.trim())
 }
 
+const isValidPincode = (value) =>{
+    return /^[1-9]{1}[0-9]{2}\\s{0, 1}[0-9]{3}$/.test(value)
+   }
+   
+
+
 const isValidObjectId = (value) => {
     return mongoose.Types.ObjectId.isValid(value)
 
@@ -36,7 +42,11 @@ const isValidSize = function (title) {
 }
 
 const isValidString = (value) => {
+<<<<<<< HEAD
     return /^[a-zA-Z ]+$/.test(value)
+=======
+    return /^[a-zA-Z -]+$/.test(value)
+>>>>>>> c218854ac3004a3f0b624348e210c8487af01532
 }
 
 const isValidPincode = (value) =>{
@@ -52,5 +62,9 @@ module.exports.isValidPW = isValidPW
 module.exports.isValidObjectId = isValidObjectId
 module.exports.isValidSize = isValidSize
 module.exports.isValidString = isValidString
+<<<<<<< HEAD
 module.exports.isValidPincode = isValidPincode;
+=======
+module.exports.isValidPincode=isValidPincode
+>>>>>>> c218854ac3004a3f0b624348e210c8487af01532
 
