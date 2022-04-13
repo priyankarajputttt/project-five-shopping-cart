@@ -167,16 +167,77 @@ const updatedProduct = async function (req, res) {
         }
         const newProduct = req.body
         const files = req.files
-        const { title, description, style, price, currencyId, currencyFormat, availableSizes } = newProduct
-        //with the help of AWS we upplode the image  
-        if(files.length > 0){
+        const data = {}
+        // if (!validator.isValidObject(newProduct)){
+        //     return res.status(400).send({status: false, message: "please enter data for updation"})
+        // }
+        
+        const { title, description, style, price, currencyId, currencyFormat, availableSizes, installments } = newProduct
+        // console.log(title || title.trim().length != 0)
+        if (title){
+            const titleInUse = await productModel.findOne({title: title})
+            if (titleInUse){
+                return res.status(400).send({status: false, message: "title is used, enter different title"})
+            }
+            if(!validator.isValid(title)){
+                return res.status(400).send({status: false, message: "please enter valid title !!"})
+            }
+            if(!validator.isValidString(title)){
+                return res.status(400).send({status: false, message: "please enter valid title"})
+            }
+            data.title = title
+        }
+        if (description){
+            if(!validator.isValid(description)){
+                return res.status(400).send({status: false, message: "please enter proper description"})
+            }
+            if(!validator.isValidString(description)){
+                return res.status(400).send({status: false, message: "please enter valid description"})
+            }
+            data.description = description
+        }
+        if (style){
+            if(!validator.isValidString(style)){
+                return res.status(400).send({status: false, message: "please enter proper style"})
+            }
+            data.style = style
+        }
+        if (price){
+            if(!validator.isValid(price)){
+                return res.status(400).send({status: false, message: "please enter proper price !!"})
+            }
+            console.log(price)
+            console.log(Number(price))
+            if (!/^[0-9.]*$/.test(price)){
+                return res.status(400).send({status: false, message: "please enter proper price"})
+            }
+            data.price = price
+        }// for decimal number /^([0-9]+\.?[0-9]*|\.[0-9]+)$/
+        if (availableSizes){
+            if(!validator.isValidSize(availableSizes)){
+                return res.status(400).send({status: false, message: "please enter proper size"})
+            }
+            data.availableSizes = availableSizes
+        }
+        if (installments){
+            if (!/^[0-9]*$/.test(installments)){
+                return res.status(400).send({status: false, message: "please enter proper installments"})
+            }
+            data.installments = installments
+        }
+        //with the help of AWS we upplode the image 
+        // return
+        if(files && files.length > 0){
             const link = await getNewProductImageLink(req, res)
-            newProduct.NewproductImage = link
+            data.productImage = link
+        }
+        if (!validator.isValidObject(data)){
+            return res.status(400).send({status: false, message: "please enter data for updation"})
         }
         //Simply UPDATE THE PRODUCT (ALL THING IN PRODUCT ),PRODUCT IMAGE, 
-        const updateProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, newProduct, { new: true })
+        const updateProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, data, { new: true })
         if (!updateProduct) {
-            return res.status(200).send({ status: false, message: "producr not found Product was all Ready Deleted" })
+            return res.status(200).send({ status: false, message: "product not found Product was all Ready Deleted" })
         }
         //console.log(updateProduct)
         return res.status(200).send({ status: true, msg: "updated product", data: updateProduct })

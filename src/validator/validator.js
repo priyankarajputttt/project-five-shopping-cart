@@ -36,7 +36,7 @@ const isValidSize = function (title) {
 }
 
 const isValidString = (value) => {
-    return /^[a-zA-Z]+$/.test(value)
+    return /^[a-zA-Z -]+$/.test(value)
 }
 
 module.exports.isValidObject = isValidObject
