@@ -26,6 +26,12 @@ const isValidPW = (value) => {
     return /^[a-zA-Z0-9'@&#.\s]{8,15}$/.test(value.trim())
 }
 
+const isValidPincode = (value) =>{
+    return /^[1-9]{1}[0-9]{2}\\s{0, 1}[0-9]{3}$/.test(value)
+   }
+   
+
+
 const isValidObjectId = (value) => {
     return mongoose.Types.ObjectId.isValid(value)
 
@@ -47,4 +53,5 @@ module.exports.isValidPW = isValidPW
 module.exports.isValidObjectId = isValidObjectId
 module.exports.isValidSize = isValidSize
 module.exports.isValidString = isValidString
+module.exports.isValidPincode=isValidPincode
 

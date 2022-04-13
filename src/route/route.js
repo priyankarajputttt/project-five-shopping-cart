@@ -2,7 +2,7 @@ const express = require("express")
 
 const userController = require("../controller/userController")
 const productController = require("../controller/productController")
-const mw = require("../middleware/auth")
+//const mw = require("../middleware/auth")
 
 const router = express.Router()
 
@@ -31,11 +31,19 @@ router.put("/products/:productId", productController.updatedProduct)
 router.delete("/products/:productId", productController.deleteProduct)
 
 
-
+//it check that you provide correct url (like delete , put ) && if you not provide user_Id in params
 router.get("*", (req, res) => {
     return res.status(404).send({status: false, message: "page not found"})
 })
 router.post("*", (req, res) => {
+    return res.status(404).send({status: false, message: "page not found"})
+})
+
+router.put("*", (req, res) => {
+    return res.status(404).send({status: false, message: "page not found"})
+})
+
+router.delete("*", (req, res) => {
     return res.status(404).send({status: false, message: "page not found"})
 })
 module.exports = router
