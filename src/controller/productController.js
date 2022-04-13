@@ -191,9 +191,9 @@ const updatedProduct = async function (req, res) {
             if(!validator.isValid(description)){
                 return res.status(400).send({status: false, message: "please enter proper description"})
             }
-            if(!validator.isValidString(description)){
-                return res.status(400).send({status: false, message: "please enter valid description"})
-            }
+            // if(!validator.isValidString(description)){
+            //     return res.status(400).send({status: false, message: "please enter valid description"})
+            // }
             data.description = description
         }
         if (style){
