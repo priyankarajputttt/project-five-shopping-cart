@@ -14,6 +14,9 @@ const register = async (req, res) => {
         }
         const{fname, lname, email, phone, password} = data
         // let address = data.address
+        if(!data.address){
+            return res.status(400).send({status: false, message: "please enter address "})
+        }
         data.address = JSON.parse(data.address)
         // return res.send(address)
         const {shipping, billing} = data.address
@@ -58,29 +61,39 @@ const register = async (req, res) => {
         if(isPhoneInUse) {
             return res.status(400).send({status:false, message: "phone number already registered, enter different number"})
         }
+       
         if(!validator.isValid(shipping.street)){
             return res.status(400).send({status: false, message: "please enter street name"})
+        }
+        if(!validator.isValidString(shipping.street)){
+            return res.status(400).send({status: false, message: "please enter valid street name"})
         }
         if(!validator.isValid(shipping.city)){
             return res.status(400).send({status: false, message: "please enter name of city"})
         }
-        if(!validator.isValid(shipping.pincode)){
-            return res.status(400).send({status: false, message: "please enter pincode"})
+        if(!validator.isValidString(shipping.city)){
+            return res.status(400).send({status: false, message: "please enter vaid name of the city"})
         }
-        if(!/^[0-9]*$/.test(shipping.pincode)){
-            return res.status(400).send({status: false, message: "please enter only numbers in pincode"})
+      
+       
+        if(!validator.isValidPincode(shipping.pincode)){
+            return res.status(400).send({status: false, message: "please enter valid pincode"})
         }
         if(!validator.isValid(billing.street)){
             return res.status(400).send({status: false, message: "please enter street name"})
         }
+        if(!validator.isValidString(billing.street)){
+            return res.status(400).send({status: false, message: "please enter street name"})
+        }
         if(!validator.isValid(billing.city)){
-            return res.status(400).send({status: false, message: "please enter name of city"})
+            return res.status(400).send({status: false, message: "please enter name of the city"})
         }
-        if(!validator.isValid(billing.pincode)){
-            return res.status(400).send({status: false, message: "please enter pincode"})
+        if(!validator.isValidString(billing.city)){
+            return res.status(400).send({status: false, message: "please enter valid name of the city"})
         }
-        if(!/^[0-9]*$/.test(billing.pincode)){
-            return res.status(400).send({status: false, message: "please enter only numbers in pincode"})
+      
+        if(!validator.isValidPincode(billing.pincode)){
+            return res.status(400).send({status: false, message: "please enter valid pincode"})
         }
         const hash = await bcrypt.hash(password, salt)
         data.password = hash

@@ -7,7 +7,7 @@ const createProduct = async function (req, res) {
 
     try {
         const products = req.body
-        products.availableSizes = JSON.parse(products.availableSizes)
+       // products.availableSizes = JSON.parse(products.availableSizes)
         // return res.send(products)
         if (!validator.isValidObject(products)) {
             return res.status(400).send({ status: false, msg: "Plaese Provide all required field" })
@@ -18,6 +18,7 @@ const createProduct = async function (req, res) {
         if (!validator.isValid(title)) {
             return res.status(400).send({ status: false, msg: "Please Provide Title" })
         }
+       
         const titleInUse = await productModel.findOne({title: title})
         if(titleInUse){
             return res.status(400).send({ status: false, msg: "enter different Title" })
@@ -25,11 +26,23 @@ const createProduct = async function (req, res) {
         if (!validator.isValid(description)) {
             return res.status(400).send({ status: false, msg: "Please Provide Description" })
         }
+       
         if (!validator.isValid(style)) {
             return res.status(400).send({ status: false, msg: "Please Provide style" })
         }
+        if (!validator.isValidString(style)){
+            return res.status(400).send({ status: false, msg: "Please Provide a valid style" })
+        }
         if (!validator.isValid(price)) {
             return res.status(400).send({ status: false, msg: "Please Provide Price" })
+        }
+        if(!/^[0-9.]*$/.test(price)){
+            return res.status(400).send({ status: false, msg: "Please Provide Valid Price" })
+
+        }
+        if(!/^[0-9]*$/.test(products.installments)){
+            return res.status(400).send({ status: false, msg: "Please Provide Valid Installments" })
+
         }
         if (!validator.isValid(availableSizes)) {
             return res.status(400).send({ status: false, msg: "Please Provide Available Sizes" })
@@ -40,8 +53,14 @@ const createProduct = async function (req, res) {
                 return res.status(400).send({ status: false, msg: 'Please Provide Available Sizes from S,XS,M,X,L,XXL,XL' })
             }
         }
-        const link = await getProductImageLink(req, res)
-        products.productImage = link
+        let files = req.files
+        if (files && files.length > 0) {
+            let uploadedFileURL = await aws.uploadFile(files[0])
+            products.productImage = uploadedFileURL
+        }else{
+           return res.status(400).send({ status: false, msg: "plz enter a product Img" })
+        }
+        
         // return res.send({data: data})
         const product = await productModel.create(products)
         return res.status(201).send({ status: true, message: 'Success', data: product })
@@ -51,21 +70,7 @@ const createProduct = async function (req, res) {
     }
 }
 
-const getProductImageLink = async function (req, res) {
-    try {
-        let files = req.files
-        if (files && files.length > 0) {
-            let uploadedFileURL = await aws.uploadFile(files[0])
-            return uploadedFileURL
-        }
-        else {
-            return res.status(400).send({ status: false, msg: "file Not FOUND" })
-        }
-    }
-    catch (err){
-        return res.status(500).send ({ status:false, error:err.msg})
-    }
-}
+
 
 const getSpecificProduct = async function (req, res) {
     try{

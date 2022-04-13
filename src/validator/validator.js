@@ -36,8 +36,13 @@ const isValidSize = function (title) {
 }
 
 const isValidString = (value) => {
-    return /^[a-zA-Z]+$/.test(value)
+    return /^[a-zA-Z ]+$/.test(value)
 }
+
+const isValidPincode = (value) =>{
+    return /^[1-9][0-9]{5}$/.test(value)
+   }
+
 
 module.exports.isValidObject = isValidObject
 module.exports.isValid = isValid
@@ -47,4 +52,5 @@ module.exports.isValidPW = isValidPW
 module.exports.isValidObjectId = isValidObjectId
 module.exports.isValidSize = isValidSize
 module.exports.isValidString = isValidString
+module.exports.isValidPincode = isValidPincode;
 
