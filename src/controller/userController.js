@@ -115,25 +115,25 @@ const userlogin = async function (req, res){
       const body = req.body;
       //// check body  provied or not
       if(!validator.isValidObject(body)){
-          return res.status(404).send ({status:false, msg :"Please provide body"})
+          return res.status(404).send ({status: false, message:"Please provide body"})
       }
       const emailId = req.body.email
       const password = req.body.password
       //check user exist or not
       if(!(emailId || password)) {
-        return res.status(400).send ({ status : false, msg: "user does not exist"})
+        return res.status(400).send ({ status: false, message: "user does not exist"})
       } 
      // check email provied or not
       if(!validator.isValid(emailId)){
-            return res.status(400).send ({status:false , msg: "plese provide email_Id"})    
+            return res.status(400).send ({status: false, message: "plese provide email_Id"})    
       }
       // check by regex
       if(!(validator.isValidEmail(emailId))) {
-          return res.status(400).send ({status:false, msg: "please provide valid eamil with sign"})
+          return res.status(400).send ({status: false, message: "please provide valid eamil with sign"})
       }
       // check password provied or not
       if(!validator.isValid(password)){
-          return res.status(400).send ({status:false, msg: "please provide valid password"})
+          return res.status(400).send ({status: false, message: "please provide valid password"})
       }
      //check by regex
       if(!validator.isValidPW(password)){
@@ -141,7 +141,7 @@ const userlogin = async function (req, res){
       }
       const login = await userModel.findOne({ email: emailId})
       if(!login) {
-          return res.status(400).send ({ status: false , msg : "email is not register"})
+          return res.status(400).send ({ status: false, message: "email is not register"})
       }
       bcrypt.compare(password, login.password, (err, result) => {
           if(result === true){
@@ -154,7 +154,7 @@ const userlogin = async function (req, res){
                 }, "projectfivegroup30"
             );
                 res.status(200).setHeader ("api-token-key", token)
-                return res.status(200).send ({ status:true, msg: "created successfully" ,data:{userId: login._id, Token: token}})
+                return res.status(200).send ({status: true, message: "created successfully" ,data:{userId: login._id, Token: token}})
             }else{
                 return res.status(400).send({status: false, message: "incorrect password"})
             }
@@ -162,7 +162,7 @@ const userlogin = async function (req, res){
       
     } 
       catch (error) {
-        return res.status(500).send({ ERROR: error.message })
+        return res.status(500).send({status: false, error: error.message })
     }
 };
 
@@ -171,16 +171,16 @@ const getUserProfile = async function(req,res){
     try{  
         let userId = req.params.userId;
         if(!(validator.isValid(userId) && validator.isValidObjectId(userId))) {
-          return res.status(400).send({status: false, msg: "user  Id not valid"})
+          return res.status(400).send({status: false, message: "user  Id not valid"})
       }
       let getUserProfile = await userModel.findById(userId);
       if(!getUserProfile){
-          return res.status(404).send({status:false, msg:"User Not Found"})
+          return res.status(404).send({status: false, message:"User Not Found"})
       }
      return res.status(200).send({status:true, message: "User profile details",data:getUserProfile})
   }catch (err) {
-      console.log("This is the error :", err.message);
-      return res.status(500).send({ msg: "Error", error: err.message });
+    //   console.log("This is the error :", err.message);
+      return res.status(500).send({ status: false, error: err.message });
     }
 }
 
@@ -224,16 +224,16 @@ const updateUser = async (req, res) => {
         }
         if(data.fname){
             if(!(validator.isValid(data.fname))) {
-                return res.status(400).send ({status:false, msg: "please provide valid first name"})
+                return res.status(400).send ({status: false, message: "please provide valid first name"})
             }
             if(!validator.isValidString(data.fname)){
-                return res.status(400).send({status: false, msg: "please enter letters only in first name"})
+                return res.status(400).send({status: false, message: "please enter letters only in first name"})
             }
             updateUserData.fname = data.fname
         }
         if(data.lname){
             if(!(validator.isValid(data.lname))) {
-                return res.status(400).send ({status:false, msg: "please provide valid lname name"})
+                return res.status(400).send ({status: false, message: "please provide valid lname name"})
             }
             if(!validator.isValidString(data.lname)){
                 return res.status(400).send({status: false, message: "please enter letters only in last name"})
