@@ -13,8 +13,8 @@ const createProduct = async function (req, res) {
             return res.status(400).send({status: false, message: "Plaese Provide all required field" })
         }
         //DE STRUCTURING
-        const { title, description,style, price, currencyId, currencyFormat, availableSizes } = products
-
+        const { title, description,style, price, currencyId, currencyFormat } = products
+        let availableSizes = products.availableSizes
         if (!validator.isValid(title)) {
             return res.status(400).send({ status: false, message: "Please Provide Title" })
         }
@@ -47,12 +47,16 @@ const createProduct = async function (req, res) {
         if (!validator.isValid(availableSizes)) {
             return res.status(400).send({ status: false, message: "Please Provide Available Sizes" })
         }
+        
+        availableSizes = JSON.parse(availableSizes)
+        // return res.send({data: availableSizes})
         for (let i of availableSizes){
-            console.log(i)
+            // console.log(i)
             if(!validator.isValidSize(i)){
                 return res.status(400).send({ status: false, message: 'Please Provide Available Sizes from S,XS,M,X,L,XXL,XL' })
             }
         }
+        products.availableSizes = availableSizes
         let files = req.files
         if (files && files.length > 0) {
             let uploadedFileURL = await aws.uploadFile(files[0])
@@ -61,7 +65,7 @@ const createProduct = async function (req, res) {
            return res.status(400).send({ status: false, message: "plz enter a product Img" })
         }
         
-        // return res.send({data: data})
+        // return res.send({data: products})
         const product = await productModel.create(products)
         return res.status(201).send({ status: true, message: 'Success', data: product })
     }
@@ -69,7 +73,6 @@ const createProduct = async function (req, res) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
-
 
 
 const getSpecificProduct = async function (req, res) {
@@ -180,7 +183,8 @@ const updatedProduct = async function (req, res) {
         //     return res.status(400).send({status: false, message: "please enter data for updation"})
         // }
         
-        const { title, description, style, price, currencyId, currencyFormat, availableSizes, installments } = newProduct
+        const { title, description, style, price, currencyId, currencyFormat, installments } = newProduct
+        let  availableSizes = newProduct.availableSizes
         // console.log(title || title.trim().length != 0)
         if (title){
             const titleInUse = await productModel.findOne({title: title})
@@ -222,8 +226,11 @@ const updatedProduct = async function (req, res) {
             data.price = price
         }// for decimal number /^([0-9]+\.?[0-9]*|\.[0-9]+)$/
         if (availableSizes){
-            if(!validator.isValidSize(availableSizes)){
-                return res.status(400).send({status: false, message: "please enter proper size"})
+            availableSizes = JSON.parse(availableSizes)
+            for(let i of availableSizes){
+                if(!validator.isValidSize(i)){
+                    return res.status(400).send({status: false, message: "please enter proper size"})
+                }
             }
             data.availableSizes = availableSizes
         }
