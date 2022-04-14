@@ -85,14 +85,17 @@ const getSpecificProduct = async function (req, res) {
             if (!(validator.isValid(queryDataSize)) && (validator.isValidSize(queryDataSize))) {
                 return res.status(400).send({status: false, message:"plz Enter a valid Size"})
             }
-            data["availableSizes"] = queryDataSize;
+            if(!(validator.isValidSize(queryDataSize))) {
+                return res.status(400).send({status:false, message:"Please Provide Available Sizes from S,XS,M,X,L,XXL,XL"})
+            }
+            data["availableSizes"] = queryDataSize.trim();
         }
         let name = req.query.name;
         if (name) {
             if (!validator.isValid(name)) {
                 return res.status(400).send({status: false, message:"plz enter a valid name"})
             }
-            data["title"] = {$regex: name}
+            data["title"] = {$regex: name.trim()}
         }
         let priceGreaterThan = req.query.priceGreaterThan;
         if (priceGreaterThan) {
