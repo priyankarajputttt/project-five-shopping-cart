@@ -4,7 +4,7 @@ const aws = require("./aws")
 const moment = require("moment")
 
 const createProduct = async function (req, res) {
-
+    
     try {
         const products = req.body
        // products.availableSizes = JSON.parse(products.availableSizes)
@@ -168,7 +168,10 @@ const updatedProduct = async function (req, res) {
         const product = await productModel.findById(productId);
         //RETURN error is no product found releated to this id
         if (!product) {
-            return res.status(404).send({ status: false, msg: "NO such Product id are avilable" })
+            return res.status(404).send({ status: false, msg: "Product not found" })
+        }
+        if (product.isDeleted == "true") {
+            return res.status(404).send({ status: false, msg: "product is already deleted" })
         }
         const newProduct = req.body
         const files = req.files
