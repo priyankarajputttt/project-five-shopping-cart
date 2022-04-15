@@ -75,26 +75,5 @@ const createCart = async (req, res) => {
     }
 }
 
-const test = async (req, res) => {
-    const data = {
-        userId: "6253fca3efb23e534c057bfe",
-        items: [
-            {
-            productId: "62552d1d21b4287a453e384b",
-            quantity: 6
-            },
-            {
-                productId: "62552cc49e2992a7790591e1",
-                quantity: 4
-                }
-        ],
-        totalPrice: 100,
-        totalItems: 1
-    }
-    const cart = await cartModel.create(data)
-    return res.send(cart)
-}
-
 module.exports.deleteCartItems = deleteCartItems
-module.exports.test = test
 module.exports.createCart = createCart

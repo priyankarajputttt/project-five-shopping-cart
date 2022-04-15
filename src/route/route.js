@@ -32,8 +32,6 @@ router.put("/products/:productId", productController.updatedProduct)
 router.delete("/products/:productId", productController.deleteProduct)
 
 //Cart
-router.post("/test", cartController.test)
-
 router.post("/users/:userId/cart", cartController.createCart)
 
 router.delete("/users/:userId/cart", cartController.deleteCartItems)
