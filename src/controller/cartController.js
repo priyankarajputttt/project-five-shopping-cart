@@ -33,7 +33,11 @@ const createCart = async (req, res) => {
     try{
         const {userId} = req.params
         const data = req.body
-        const items = data.items
+        let items = data.items
+        if (typeof(items) == "string"){
+            items = JSON.parse(items)
+        }
+        // return res.send(items)
         let newItems
         const isUserExist = await userModel.findOne({_id: userId})
         if(!isUserExist){

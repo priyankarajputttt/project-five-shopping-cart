@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     fname: {
         type: String,
         require: true,
-
+        trim: true
     },
     lname: {
         type: String,
@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true,
         unique: true,
-
     },
     password: {
         type: String,
