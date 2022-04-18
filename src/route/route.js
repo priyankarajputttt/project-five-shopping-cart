@@ -31,6 +31,13 @@ router.put("/products/:productId", productController.updatedProduct)
 
 router.delete("/products/:productId", productController.deleteProduct)
 
+//Cart
+router.post("/users/:userId/cart", cartController.createCart)
+
+router.get(" /users/:userId/cart", cartController.getCartByUserId)
+
+router.delete("/users/:userId/cart", cartController.deleteCartItems)
+
 
 // Carts
 
@@ -44,11 +51,9 @@ router.get("*", (req, res) => {
 router.post("*", (req, res) => {
     return res.status(404).send({status: false, message: "page not found"})
 })
-
 router.put("*", (req, res) => {
     return res.status(404).send({status: false, message: "page not found"})
 })
-
 router.delete("*", (req, res) => {
     return res.status(404).send({status: false, message: "page not found"})
 })

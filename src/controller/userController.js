@@ -121,7 +121,7 @@ const userlogin = async function (req, res){
       const password = req.body.password
       //check user exist or not
       if(!(emailId || password)) {
-        return res.status(400).send ({ status: false, message: "user does not exist"})
+        return res.status(400).send ({ status: false, message: "email or password is missing"})
       } 
      // check email provied or not
       if(!validator.isValid(emailId)){
