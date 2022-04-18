@@ -4,7 +4,6 @@ const aws = require("./aws")
 const moment = require("moment")
 
 const createProduct = async function (req, res) {
-    
     try {
         const products = req.body
        // products.availableSizes = JSON.parse(products.availableSizes)
@@ -153,9 +152,12 @@ const getProductByProductId = async (req,res) => {
 
         const getDataByProductId = await productModel.findById({_id:productId})
 
-        if(!getDataByProductId)
-        {return res.status(404).send({status:true, message:`This ${productId} productId not exist `})}
-        
+        if(!getDataByProductId){
+            return res.status(404).send({status:true, message:`This ${productId} productId not exist `})
+        }
+        if(getDataByProductId.isDeleted === true){
+            return res.status(400).send({status:true, message:"product is deleted"})
+        }
         return res.status(200).send({status:true, message:getDataByProductId})
 
 

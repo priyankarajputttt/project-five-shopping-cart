@@ -170,6 +170,7 @@ const userlogin = async function (req, res){
 const getUserProfile = async function(req,res){
     try{  
         let userId = req.params.userId;
+        // return res.send(req)
         if(!(validator.isValid(userId) && validator.isValidObjectId(userId))) {
           return res.status(400).send({status: false, message: "user  Id not valid"})
       }

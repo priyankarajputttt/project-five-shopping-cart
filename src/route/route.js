@@ -3,7 +3,8 @@ const express = require("express")
 const userController = require("../controller/userController")
 const productController = require("../controller/productController")
 const cartController = require("../controller/cartController")
-//const mw = require("../middleware/auth")
+const orderController = require("../controller/orderController")
+const mw = require("../middleware/auth")
 
 const router = express.Router()
 
@@ -16,9 +17,9 @@ router.post("/register", userController.register)
 
 router.post("/login", userController.userlogin)
 
-router.get("/user/:userId/profile", userController.getUserProfile)
+router.get("/user/:userId/profile", mw.authentication, userController.getUserProfile)
 
-router.put("/user/:userId/profile", userController.updateUser)
+router.put("/user/:userId/profile", mw.authentication, mw.userAuthorization, userController.updateUser)
 
 //products
 router.post("/products", productController.createProduct)
@@ -32,12 +33,18 @@ router.put("/products/:productId", productController.updatedProduct)
 router.delete("/products/:productId", productController.deleteProduct)
 
 //Cart
-router.post("/users/:userId/cart", cartController.createCart)
+router.post("/users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.createCart)
 
-router.get(" /users/:userId/cart", cartController.getCartByUserId)
+router.get(" /users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.getCartByUserId)
 
-router.delete("/users/:userId/cart", cartController.deleteCartItems)
+router.delete("/users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.deleteCartItems)
 
+router.post("/users/:userId/cart", cartController.updateCart)
+
+// order
+router.post("/users/:userId/orders", mw.authentication, mw.userAuthorization, orderController.postOrder)
+
+router.put("/users/:userId/orders", mw.authentication, mw.userAuthorization, orderController.upadateOrder)
 
 //it check that you provide correct url (like delete , put ) && if you not provide user_Id in params
 router.get("*", (req, res) => {
