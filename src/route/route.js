@@ -39,12 +39,14 @@ router.get(" /users/:userId/cart", mw.authentication, mw.userAuthorization, cart
 
 router.delete("/users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.deleteCartItems)
 
-router.post("/users/:userId/cart", cartController.updateCart)
+router.put("/users/:userId/cart", cartController.updateCart)
 
 // order
 router.post("/users/:userId/orders", mw.authentication, mw.userAuthorization, orderController.postOrder)
 
 router.put("/users/:userId/orders", mw.authentication, mw.userAuthorization, orderController.upadateOrder)
+
+
 
 //it check that you provide correct url (like delete , put ) && if you not provide user_Id in params
 router.get("*", (req, res) => {
