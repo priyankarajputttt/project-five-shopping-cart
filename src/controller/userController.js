@@ -15,7 +15,7 @@ const register = async (req, res) => {
         const{fname, lname, email, phone, password} = data
         // let address = data.address
         if(!data.address){
-            return res.status(400).send({status: false, message: "please enter address "})
+            return res.status(400).send({status: false, message: "please enter your address "})
         }
         data.address = JSON.parse(data.address)
         // return res.send(address)
@@ -51,13 +51,13 @@ const register = async (req, res) => {
             return res.status(400).send({status:false, message: "email already registered, enter different email"})
         }
         if(!validator.isValid(password)){
-            return res.status(400).send({status: false, message: "please enter password"})
+            return res.status(400).send({status: false, message: "please enter  password"})
         }
         if(!validator.isValidPW(password)){
             return res.status(400).send({status: false, message: "please enter valid password, between 8 to 15 characters"})
         }
         if (!validator.isValidPhone(phone)){
-            return res.status(400).send({status: false, message: "please enter valid phone number"})
+            return res.status(400).send({status: false, message: "please enter phone number"})
         }
         const isPhoneInUse = await userModel.findOne({phone: phone})
         if(isPhoneInUse) {
@@ -103,7 +103,7 @@ const register = async (req, res) => {
         data.profileImage = link
         // return res.send({data: data})
         const user = await userModel.create(data)
-        return res.status(201).send({status: true, message: 'Success', data: user})
+        return res.status(201).send({status: true, message: 'User created successfully', data: user})
     }catch(error){
         return res.status(500).send({status: false, message: error.message})
     }
@@ -115,7 +115,7 @@ const userlogin = async function (req, res){
       const body = req.body;
       //// check body  provied or not
       if(!validator.isValidObject(body)){
-          return res.status(404).send ({status: false, message:"Please provide body"})
+          return res.status(400).send ({status: false, message:"Please provide body"})
       }
       const emailId = req.body.email
       const password = req.body.password
@@ -141,7 +141,7 @@ const userlogin = async function (req, res){
       }
       const login = await userModel.findOne({ email: emailId})
       if(!login) {
-          return res.status(400).send ({ status: false, message: "email is not register"})
+          return res.status(404).send ({ status: false, message: "email is not register"})
       }
       bcrypt.compare(password, login.password, (err, result) => {
           if(result === true){
@@ -154,7 +154,7 @@ const userlogin = async function (req, res){
                 }, "projectfivegroup30"
             );
                 res.status(200).setHeader ("api-token-key", token)
-                return res.status(200).send ({status: true, message: "created successfully" ,data:{userId: login._id, Token: token}})
+                return res.status(200).send ({status: true, message: "token created successfully" ,data:{userId: login._id, Token: token}})
             }else{
                 return res.status(400).send({status: false, message: "incorrect password"})
             }
@@ -333,7 +333,7 @@ const updateUser = async (req, res) => {
         }
         // return res.send(data.address)
         const updateUser = await userModel.findOneAndUpdate({_id: userId}, updateUserData, {new: true})
-        return res.status(200).send({status: true, data: updateUser})
+        return res.status(200).send({status: true, message: "User profile update successfully", data: updateUser})
     }catch(error){
         return res.status(500).send({status: false, message: error.message})
     }
