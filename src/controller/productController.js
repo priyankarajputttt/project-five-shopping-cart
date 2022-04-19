@@ -156,7 +156,7 @@ const getProductByProductId = async (req,res) => {
             return res.status(404).send({status:true, message:`This ${productId} productId not exist `})
         }
         if(getDataByProductId.isDeleted === true){
-            return res.status(400).send({status:true, message:"product is deleted"})
+            return res.status(404).send({status:true, message:"product is already deleted"})
         }
         return res.status(200).send({status:true, message:getDataByProductId})
 
@@ -276,7 +276,7 @@ const getNewProductImageLink = async function (req, res) {
             return uploadedFileURL
         }
         else {
-            return res.status(400).send({ status: false, message: "file Not FOUND" })
+            return res.status(404).send({ status: false, message: "file Not FOUND" })
         }
     }
     catch (err) {
@@ -303,7 +303,7 @@ const deleteProduct = async (req, res) => {
             })
         }
         if (deletedProductId.isDeleted !== false) {
-            return res.status(400).send({
+            return res.status(404).send({
                 status: true,
                 message: `This ${productId} productId is already Deleted `
             })
