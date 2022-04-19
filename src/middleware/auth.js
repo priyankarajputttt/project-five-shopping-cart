@@ -14,6 +14,9 @@ const authentication = async function  (req, res , next)
         if(!decodedToken){
             return  res.status(400).send ({status:false, message: "token is invalid"})
         }
+        if (Date.now()>(decodedToken.exp)*1000) {
+            return res.status(404).send({ status: false, message: `please login again because session is expired` })
+        }
         next()
         }
     catch (error){
