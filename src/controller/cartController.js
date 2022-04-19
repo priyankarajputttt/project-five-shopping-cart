@@ -74,35 +74,35 @@ const createCart = async function(req, res) {
         for(let i = 0; i < items.length; i++){
           let productId = items[i].productId
           let quantity = items[i].quantity
-           let findProduct = await productModel.findById(productId);
+           let findProduct = await productModel.findOne({_id:productId,isDeleted:false});
            if(!findProduct){
-            return res.status(400).send({status:false, message:"product is not valid"})
+            return res.status(400).send({status:false, message:"product is not valid or product is deleted"})
            }
            totalPrice = totalPrice + (findProduct.price*quantity)
          }
         let createCart = await cartModel.create({userId:userId,items:items,totalPrice:totalPrice,totalItems:items.length })
-         items2 = createCart.items
+        
         return res.status(200).send({status:true,data:createCart})
      } if(isCartExist){
           items2 = isCartExist.items
      }
-        let findProduct = await productModel.findById(items[0].productId)
+        let findProduct = await productModel.findOne({_id:items[0].productId,isDeleted:false})
         if(!findProduct){
           return res.status(400).send({status:false, message:"product is not valid"})
          }
        // res.send(findProduct)
         let totalPrice2 = findProduct.price
         let newquantity = items[0].quantity
-        let flage = 0
+        let flag = 0
         
            for(let i = 0; i < items2.length; i++){
                let productId = items2[i].productId
             if(productId == items[0].productId){
-                   flage = 1
+                   flag = 1
                    items2[i].quantity = items2[i].quantity + newquantity}
                
    }    totalPrice2 = Math.round(totalPrice2 * newquantity + isCartExist.totalPrice) 
-        if(flage == 0){
+        if(flag == 0){
             items2.push(items[0])
         }
        let updateCart = await cartModel.findOneAndUpdate({userId:userId},{$set:{items:items2,totalPrice:totalPrice2,totalItems:items2.length}},{new:true})
