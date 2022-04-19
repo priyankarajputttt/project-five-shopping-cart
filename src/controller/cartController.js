@@ -115,7 +115,7 @@ const getCartByUserId = async function (req, res) {
     if (!validator.isValidObjectId(userId)) {
         return res.status(400).send({ status: false, message: "Invalid User Id" })
     }
-    const getProduct = await CartModel.findOne({ userId: userId })
+    const getProduct = await cartModel.findOne({ userId: userId })
     if(!getProduct){
         return res.status(404).send({status: false, message: "cart not found"})
     }
