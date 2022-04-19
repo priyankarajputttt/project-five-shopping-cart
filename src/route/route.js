@@ -35,11 +35,11 @@ router.delete("/products/:productId", productController.deleteProduct)
 //Cart
 router.post("/users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.createCart)
 
-router.get(" /users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.getCartByUserId)
+router.get("/users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.getCartByUserId)
 
 router.delete("/users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.deleteCartItems)
 
-router.put("/users/:userId/cart", cartController.updateCart)
+router.put("/users/:userId/cart", mw.authentication, mw.userAuthorization, cartController.updateCart)
 
 // order
 router.post("/users/:userId/orders", mw.authentication, mw.userAuthorization, orderController.postOrder)
