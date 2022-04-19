@@ -30,16 +30,16 @@ const register = async (req, res) => {
             return res.status(400).send({status: false, message: "please enter your first name"})
         }
 
-        // if(!validator.isValidString(fname)){
-        //     return res.status(400).send({status: false, message: "please enter letters only in first name"})
-        // }
+        if(!validator.isValidString(fname)){
+            return res.status(400).send({status: false, message: "please enter letters only in first name"})
+        }
         
         if(!validator.isValid(lname)){
             return res.status(400).send({status: false, message: "please enter your last name"})
         }
-        // if(!validator.isValidString(lname)){
-        //     return res.status(400).send({status: false, message: "please enter letters only in last name"}) 
-        // }
+        if(!validator.isValidString(lname)){
+            return res.status(400).send({status: false, message: "please enter letters only in last name"}) 
+        }
         if(!validator.isValid(email)){
             return res.status(400).send({status: false, message: "please enter your email"})
         }
@@ -57,24 +57,23 @@ const register = async (req, res) => {
             return res.status(400).send({status: false, message: "please enter valid password, between 8 to 15 characters"})
         }
         if (!validator.isValidPhone(phone)){
-            return res.status(400).send({status: false, message: "please enter phone number"})
+            return res.status(400).send({status: false, message: "please enter valid phone number"})
         }
         const isPhoneInUse = await userModel.findOne({phone: phone})
         if(isPhoneInUse) {
             return res.status(400).send({status:false, message: "phone number already registered, enter different number"})
         }
-       
         if(!validator.isValid(shipping.street)){
             return res.status(400).send({status: false, message: "please enter street name"})
         }
         if(!validator.isValidString(shipping.street)){
-            return res.status(400).send({status: false, message: "please enter valid street name"})
+            return res.status(400).send({status: false, message: "please enter valid street name, dont enter number"})
         }
         if(!validator.isValid(shipping.city)){
             return res.status(400).send({status: false, message: "please enter name of city"})
         }
         if(!validator.isValidString(shipping.city)){
-            return res.status(400).send({status: false, message: "please enter vaid name of the city"})
+            return res.status(400).send({status: false, message: "please enter vaid name of the city, dont enter number"})
         }
       
        
@@ -85,13 +84,13 @@ const register = async (req, res) => {
             return res.status(400).send({status: false, message: "please enter street name"})
         }
         if(!validator.isValidString(billing.street)){
-            return res.status(400).send({status: false, message: "please enter street name"})
+            return res.status(400).send({status: false, message: "please enter street name, dont enter number"})
         }
         if(!validator.isValid(billing.city)){
             return res.status(400).send({status: false, message: "please enter name of the city"})
         }
         if(!validator.isValidString(billing.city)){
-            return res.status(400).send({status: false, message: "please enter valid name of the city"})
+            return res.status(400).send({status: false, message: "please enter valid name of the city, dont enter number"})
         }
       
         if(!validator.isValidPincode(billing.pincode)){
@@ -99,8 +98,15 @@ const register = async (req, res) => {
         }
         const hash = await bcrypt.hash(password, salt)
         data.password = hash
-        const link = await getProfileImgLink(req, res)
-        data.profileImage = link
+        // const link = await getProfileImgLink(req, res)
+        // data.profileImage = link
+        let files = req.files
+        if (files && files.length > 0) {
+            let uploadedFileURL = await aws.uploadFile(files[0])
+            data.profileImage = uploadedFileURL
+        }else{
+           return res.status(400).send({ status: false, message: "plz enter a profile Img" })
+        }
         // return res.send({data: data})
         const user = await userModel.create(data)
         return res.status(201).send({status: true, message: 'User created successfully', data: user})

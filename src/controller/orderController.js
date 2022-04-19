@@ -19,6 +19,9 @@ const postOrder = async (req, res) => {
             return res.status(404).send({status: false, message: "enter data"})
         }
         const {items, totalPrice, totalItems} = data
+        if(items.length == 0){
+          return res.status(404).send({status: false, message: "no items in cart, add at least one item in cart"})
+        }
         let totalQuantity = 0
         for(let i = 0; i < items.length; i++){
             totalQuantity = totalQuantity + items[i].quantity
@@ -45,7 +48,7 @@ const upadateOrder = async function (req, res) {
       if (!(validator.isValid(orderId) && validator.isValidObjectId(orderId))) {
         return res
           .status(400)
-          .send({ status: false, message: "user  Id not valid" });
+          .send({ status: false, message: "order  Id not valid" });
       }
     
       let cartExist = await cartModel.findOne({userId:userId});
