@@ -16,11 +16,11 @@ const postOrder = async (req, res) => {
         }
         const data = req.body
         if (!validator.isValidObject(data)){
-            return res.status(404).send({status: false, message: "enter data"})
+            return res.status(400).send({status: false, message: "enter data"})
         }
         const {items, totalPrice, totalItems} = data
         if(items.length == 0){
-          return res.status(404).send({status: false, message: "no items in cart, add at least one item in cart"})
+          return res.status(400).send({status: false, message: "no items in cart, add at least one item in cart"})
         }
         let totalQuantity = 0
         for(let i = 0; i < items.length; i++){
@@ -54,19 +54,19 @@ const upadateOrder = async function (req, res) {
       let cartExist = await cartModel.findOne({userId:userId});
       if (!cartExist) {
         return res
-          .status(400)
+          .status(404)
           .send({ status: false, message: "This user have no card till Now" });
       }
       let findOrder = await orderModel.findById(orderId);
       if (!findOrder) {
         return res
-          .status(400)
+          .status(404)
           .send({ status: false, message: "Order in not found with this Id" });
       }
       if (userId != findOrder.userId) {
         return res
-          .status(400)
-          .send({ status: false, message: "User is not utherized to do changes" });
+          .status(403)
+          .send({ status: false, message: "User is not autherized to do changes" });
       }
       if (findOrder.cancellable == true && findOrder.status == "pending") {
         const updateOrder = await orderModel.findOneAndUpdate(
