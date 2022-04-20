@@ -46,8 +46,6 @@ router.post("/users/:userId/orders", mw.authentication, mw.userAuthorization, or
 
 router.put("/users/:userId/orders", mw.authentication, mw.userAuthorization, orderController.upadateOrder)
 
-
-
 //it check that you provide correct url (like delete , put ) && if you not provide user_Id in params
 router.get("*", (req, res) => {
     return res.status(404).send({status: false, message: "page not found"})

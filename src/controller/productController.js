@@ -17,7 +17,9 @@ const createProduct = async function (req, res) {
         if (!validator.isValid(title)) {
             return res.status(400).send({ status: false, message: "Please Provide Title" })
         }
-       
+        if (!validator.isValidString(title)) {
+            return res.status(400).send({ status: false, message: "Please Provide valid Title, do not enter numbers" })
+        }
         const titleInUse = await productModel.findOne({title: title})
         if(titleInUse){
             return res.status(400).send({status: false, message: "enter different Title" })
@@ -37,8 +39,9 @@ const createProduct = async function (req, res) {
         }
         if(!/^[0-9.]*$/.test(price)){
             return res.status(400).send({ status: false, message: "Please Provide Valid Price" })
-
+            
         }
+        products.price = Math.round(price)
         if(!/^[0-9]*$/.test(products.installments)){
             return res.status(400).send({ status: false, message: "Please Provide Valid Installments" })
 
