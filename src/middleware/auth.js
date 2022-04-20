@@ -9,7 +9,7 @@ const authentication = async function  (req, res , next)
             return res.status(400).send({status:false , message:"Plz enter a token"})
         }
         let splitToken = token.split(' ')
-        let decodedToken = jwt.verify(splitToken[1], "projectfivegroup30")
+        let decodedToken = jwt.verify(splitToken[1], "projectfivegroup23")
         //check decoded Token
         if(!decodedToken){
             return  res.status(400).send ({status:false, message: "token is invalid"})
@@ -31,7 +31,7 @@ const userAuthorization = async function(req, res, next){
         return res.status(400).send({status:false , message:"Plz enter a token"})
     }
     let splitToken = token.split(' ')
-    let decodedToken = jwt.verify(splitToken[1], "projectfivegroup30")
+    let decodedToken = jwt.verify(splitToken[1], "projectfivegroup23")
     let userId = req.params.userId;
     let DuserId = decodedToken.userId;
     if(!(validator.isValid(userId)) && (validator.isValidObjectId(userId))){

@@ -157,7 +157,7 @@ const userlogin = async function (req, res){
                     iat: Math.floor(Date.now() / 1000),
                     exp: Math.floor(Date.now() / 1000) + 2*60*60
                
-                }, "projectfivegroup30"
+                }, "projectfivegroup23"
             );
                 res.status(200).setHeader ("api-token-key", token)
                 return res.status(200).send ({status: true, message: "token created successfully" ,data:{userId: login._id, Token: token}})
