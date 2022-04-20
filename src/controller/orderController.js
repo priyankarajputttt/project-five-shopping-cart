@@ -94,7 +94,7 @@ const upadateOrder = async function (req, res) {
         .status(400)
         .send({
           status: false,
-          message: "order is not canclable",
+          message: "order is not canclable or product is alerady deleted",
       });
     }catch(error){
       return res.status(500).send({status: false, message: error.message})
